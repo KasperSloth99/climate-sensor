@@ -18,6 +18,7 @@ usage() {
   echo "-p | --purge                    (Optional)            Clean the build environment - Default: ${PURGE_ENV}"
   echo "--sdk [SDK_PATH]                (Optional)            SDK target directory - Default: ${ZEPHYR_SDK_INSTALL_DIR}"
   echo "-s | --setup                    (Optional)            Setup the build environment - Default: ${RUN_SETUP}"
+  echo "-m | --menu                     (Optional)            Open menuconfig"
   echo "-h | --help                     (Optional)            Help information"
 }
 
@@ -36,6 +37,12 @@ while [ $# -gt 0 ]; do
     -p | --purge)
       PURGE_ENV=true
       CLEAN_BUILD=true
+      shift 1
+      ;;
+
+    -m | --menu)
+      WEST_ARGS+=("-t")
+      WEST_ARGS+=("menuconfig")
       shift 1
       ;;
 
@@ -80,7 +87,7 @@ fi
 if [ ${CLEAN_BUILD} = true ]; then
   rm -rf "${SCRIPT_DIR}"/build*/
   # We need sudo if running inside docker since files are generated with "sudo west twister.."
-  ${SUDO_PREFIX} rm -rf "${FIRMWARE_DIR}"/twister-out*/
+  rm -rf "${FIRMWARE_DIR}"/twister-out*/
   WEST_ARGS+=("--pristine")
 fi
 
@@ -110,6 +117,7 @@ if [ ! -d "${WEST_WORKSPACE}" ]; then
   west init -l "${PROJECT_DIR}"
 fi
 west update
+west blobs fetch hal_espressif
 
 west build "${SRC_DIR}" "${WEST_ARGS[@]}" -b "${BOARD}" -d "${SCRIPT_DIR}/${BUILD_DIR}"
 if [ $DO_FLASH = true ]; then
