@@ -121,5 +121,5 @@ west blobs fetch hal_espressif
 
 west build "${SRC_DIR}" "${WEST_ARGS[@]}" -b "${BOARD}" -d "${SCRIPT_DIR}/${BUILD_DIR}"
 if [ $DO_FLASH = true ]; then
-  ${SUDO_PREFIX} west flash -r openocd -d "${SCRIPT_DIR}/${BUILD_DIR}"
+  west flash -r openocd -d "${SCRIPT_DIR}/${BUILD_DIR}"
 fi
