@@ -1,0 +1,20 @@
+manifest:
+  version: "0.12"
+
+  projects:
+    - name: zephyr
+      revision: v4.2.0
+      url: https://github.com/zephyrproject-rtos/zephyr
+      west-commands: scripts/west-commands.yml
+      import:
+        name-allowlist:
+          - cmsis_6
+          - hal_espressif
+
+    - name: esp-idf
+      url: https://github.com/espressif/esp-idf
+      path: modules/hal/espressif/esp-idf
+      revision: v5.1.2  # Change this to match the Zephyr-supported version
+
+  self:
+    path: app  # Your application path
