@@ -1,0 +1,44 @@
+/ {
+    chosen {
+        zephyr,display = &ili9341;
+    };
+
+    mipi_dbi {
+        compatible = "zephyr,mipi-dbi-spi";
+        dc-gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
+        reset-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+        spi-dev = <&spi2>;
+        write-only;
+        #address-cells = <1>;
+        #size-cells = <0>;
+        ili9341: ili9341@0 {
+			compatible = "ilitek,ili9341";
+			mipi-max-frequency = <25000000>;
+			reg = <0>;
+			pixel-format = <0>;
+			rotation = <0>;
+			width = <240>;
+			height = <320>;
+		};
+    };
+};
+
+&i2c0 {
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_FAST>;
+
+    temperature_moisture_sensor: sht3xd@44 {
+        compatible = "sensirion,sht3xd";
+        reg = <0x44>;
+    };
+
+    co2_sensor: stcc4@64 {
+        compatible = "sensirion,stcc4";
+        reg = <0x64>;
+    };
+
+    chem_sensor: sgp40@59 {
+        compatible = "sensirion,stg40";
+        reg = <0x59>;
+    };
+};
