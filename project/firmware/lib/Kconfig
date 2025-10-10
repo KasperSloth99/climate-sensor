@@ -1,0 +1,17 @@
+config WIFI_CONNECTOR
+    bool "Enable my wifi library"
+    select NETWORKING
+    select NET_LOG
+    select NET_SHELL
+    select NET_STATISTICS
+    select WIFI_ESP32
+    select ESP32_WIFI_STA_MODE
+    select WIFI
+    select NET_L2_WIFI_SHELL
+    select NET_IPV4
+    select NET_TCP
+    select NET_CONFIG_SETTINGS
+    select NET_IP
+    select NET_INTERFACE_NAME
+    select NET_DHCPV4
+
