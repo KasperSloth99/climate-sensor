@@ -1,0 +1,8 @@
+config MY_WIFI_KEYS
+    bool "Config my wifi storage for SSID / Passphrases"
+    select FLASH
+    select FLASH_MAP
+    select FILE_SYSTEM
+    select FILE_SYSTEM_LITTLEFS
+    select FILE_SYSTEM_LITTLEFS
+    select FILE_SYSTEM_LIB_LINK

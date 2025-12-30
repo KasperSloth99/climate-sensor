@@ -1,2 +1,2 @@
-zephyr_library()
-zephyr_library_sources(connection.c)
+add_subdirectory_ifdef(CONFIG_MY_WIFI_KEYS keys)
+add_subdirectory_ifdef(CONFIG_MY_WIFI_CONNECTION connection)

@@ -1,4 +1,3 @@
-menuconfig MY_WIFI
-    bool "My wifi"
-    help
-        Config my wifi
+rsource "connection/Kconfig"
+
+rsource "keys/Kconfig"
