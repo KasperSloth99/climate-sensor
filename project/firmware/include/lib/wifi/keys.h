@@ -1,0 +1,4 @@
+#ifndef LIB_WIFI_STORAGE_H_
+#define LIB_WIFI_STORAGE_H_
+
+#endif // LIB_WIFI_STORAGE_H_

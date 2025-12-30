@@ -1,0 +1,2 @@
+config MY_WIFI_KEYS
+    bool "Config my wifi storage for SSID / Passphrases"

@@ -1,1 +1,2 @@
 add_subdirectory_ifdef(CONFIG_MY_WIFI_KEYS keys)
+add_subdirectory_ifdef(CONFIG_MY_WIFI_CONNECTION connection)
