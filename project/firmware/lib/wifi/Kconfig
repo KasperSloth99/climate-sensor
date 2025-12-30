@@ -1,0 +1,4 @@
+menuconfig MY_WIFI
+    bool "My wifi"
+    help
+        Config my wifi
