@@ -1,5 +1,0 @@
-description: Sensirion STCC4 Co2 Sensor
-
-compatible: "sensirion,stcc4"
-
-include: [sensor-device.yaml, i2c-device.yaml]
