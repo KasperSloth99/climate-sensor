@@ -1,0 +1,2 @@
+config MY_WIFI_CONNECTION
+    bool "My wifi connection"

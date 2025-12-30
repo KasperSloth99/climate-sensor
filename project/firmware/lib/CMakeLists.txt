@@ -1,1 +1,1 @@
-add_subdirectory_ifdef(CONFIG_MY_WIFI wifi)
+add_subdirectory(wifi)
