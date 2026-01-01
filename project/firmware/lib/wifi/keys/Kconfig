@@ -3,6 +3,12 @@ config MY_WIFI_KEYS
     select FLASH
     select FLASH_MAP
     select FILE_SYSTEM
-    select FILE_SYSTEM_LITTLEFS
+    select FSTAB
     select FILE_SYSTEM_LITTLEFS
     select FILE_SYSTEM_LIB_LINK
+    select JSON_LIBRARY
+
+config MY_WIFI_KEYS_SHELL
+    bool "Add shell option for key storage"
+    select SHELL
+    select FILE_SYSTEM_SHELL
