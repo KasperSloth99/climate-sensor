@@ -10,6 +10,7 @@ DO_FLASH=false
 CLEAN_BUILD=false
 PURGE_ENV=false
 RUN_SETUP=false
+AUTOCONNECT=false
 ESP32C3_DEV="/dev/ttyACM0"
 
 usage() {
@@ -58,6 +59,11 @@ while [ $# -gt 0 ]; do
 
     -s | --setup)
       RUN_SETUP=true
+      shift 1
+      ;;
+
+    -ac | --autoconnect)
+      AUTOCONNECT=true
       shift 1
       ;;
 
@@ -123,4 +129,7 @@ west blobs fetch hal_espressif
 west build "${SRC_DIR}" "${WEST_ARGS[@]}" -b "${BOARD}" -d "${SCRIPT_DIR}/${BUILD_DIR}"
 if [ $DO_FLASH = true ]; then
   west flash -d "${SCRIPT_DIR}/${BUILD_DIR}" --esp-device "${ESP32C3_DEV}"
+  if [ $AUTOCONNECT = true ]; then
+    picocom -b 115200 "${ESP32C3_DEV}"
+  fi
 fi
