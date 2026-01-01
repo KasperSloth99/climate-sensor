@@ -10,6 +10,7 @@ DO_FLASH=false
 CLEAN_BUILD=false
 PURGE_ENV=false
 RUN_SETUP=false
+ESP32C3_DEV="/dev/ttyACM0"
 
 usage() {
   echo "usage:  $0 [-h|--help]"
@@ -121,5 +122,5 @@ west blobs fetch hal_espressif
 
 west build "${SRC_DIR}" "${WEST_ARGS[@]}" -b "${BOARD}" -d "${SCRIPT_DIR}/${BUILD_DIR}"
 if [ $DO_FLASH = true ]; then
-  west flash -r openocd -d "${SCRIPT_DIR}/${BUILD_DIR}"
+  west flash -d "${SCRIPT_DIR}/${BUILD_DIR}" --esp-device "${ESP32C3_DEV}"
 fi
