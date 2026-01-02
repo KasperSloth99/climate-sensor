@@ -60,10 +60,20 @@ static int cmd_keys_save_config(const struct shell *sh, size_t argc,
   return save_config(&config);
 }
 
+static int cmd_keys_get_config(const struct shell *sh, size_t argc,
+                               char **argv) {
+  ARG_UNUSED(argc);
+  ARG_UNUSED(argv);
+  shell_print(sh, "SSID: %s Password: %s", _wifi_config.ssid,
+              _wifi_config.password);
+  return 0;
+}
+
 SHELL_STATIC_SUBCMD_SET_CREATE(
     my_wifi_cmds,
     SHELL_CMD_ARG(save, NULL, "Save WiFi config: save <ssid> <password>",
                   cmd_keys_save_config, 3, 0),
+    SHELL_CMD(get, NULL, "Get current wifi config", cmd_keys_get_config),
     SHELL_SUBCMD_SET_END);
 
 SHELL_CMD_REGISTER(my_wifi, &my_wifi_cmds, "MyWiFi configuration commands",
