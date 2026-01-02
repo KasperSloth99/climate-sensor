@@ -1,2 +1,14 @@
 config MY_WIFI_CONNECTION
     bool "My wifi connection"
+    select NETWORKING
+    select WIFI
+    select WIFI_ESP32
+    select NET_IPV4
+    select NET_DHCPV4
+    select NET_SOCKETS
+
+config MY_WIFI_CONNECTION_SHELL
+    bool "Add shell option for key storage"
+    depends on MY_WIFI_CONNECTION
+    select SHELL
+    select NET_SHELL

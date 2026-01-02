@@ -11,6 +11,7 @@ manifest:
           - cmsis_6
           - hal_espressif
           - littlefs
+          - mbedtls
 
     - name: esp-idf
       url: https://github.com/espressif/esp-idf

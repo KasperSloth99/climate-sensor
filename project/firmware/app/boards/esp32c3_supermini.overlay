@@ -11,6 +11,10 @@
 };
 
 / {
+	chosen {
+		zephyr,wifi = &wifi;
+	};
+
     fstab {
         compatible = "zephyr,fstab";
         lfs1: lfs1 {
