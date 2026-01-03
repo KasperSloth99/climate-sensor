@@ -6,6 +6,7 @@ config MY_WIFI_CONNECTION
     select NET_IPV4
     select NET_DHCPV4
     select NET_SOCKETS
+    select EVENTS
 
 config MY_WIFI_CONNECTION_SHELL
     bool "Add shell option for key storage"

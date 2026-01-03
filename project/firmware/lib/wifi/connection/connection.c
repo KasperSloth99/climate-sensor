@@ -13,9 +13,10 @@
 LOG_MODULE_REGISTER(wifi_app, LOG_LEVEL_INF);
 
 #define CONNECTION_RETRIES_AT_BOOT 5
+#define CONNECTED 0x01
 
 struct net_management {
-  struct k_sem semaphore;
+  struct k_event event;
   struct net_mgmt_event_callback cb;
 };
 
@@ -33,12 +34,12 @@ static void wifi_mgmt_event_handler(struct net_mgmt_event_callback *cb,
   struct net_management *mgmt = CONTAINER_OF(cb, struct net_management, cb);
   switch (mgmt_event) {
   case NET_EVENT_WIFI_CONNECT_RESULT:
-    LOG_INF("WiFi connected");
-    k_sem_give(&mgmt->semaphore);
+    LOG_INF("WIFI connected");
+    k_event_set(&mgmt->event, CONNECTED);
     break;
   case NET_EVENT_WIFI_DISCONNECT_RESULT:
-    LOG_INF("WiFi disconnected");
-    k_sem_reset(&mgmt->semaphore);
+    LOG_INF("WIFI disconnected");
+    k_event_clear(&mgmt->event, CONNECTED);
     break;
   default:
     break;
@@ -66,8 +67,11 @@ static void net_mgmt_event_handler(struct net_mgmt_event_callback *cb,
   switch (mgmt_event) {
   case NET_EVENT_IPV4_ADDR_ADD:
     LOG_INF("IPv4 address obtained");
-    k_sem_give(&mgmt->semaphore);
+    k_event_set(&mgmt->event, CONNECTED);
     break;
+  case NET_EVENT_IPV4_ADDR_DEL:
+    LOG_INF("IPv4 address removed");
+    k_event_clear(&mgmt->event, CONNECTED);
   default:
     break;
   }
@@ -79,28 +83,41 @@ static int wifi_connect(void) {
   if (net_mgmt(NET_REQUEST_WIFI_CONNECT, _wifi_connection.iface,
                &_wifi_connection.params,
                sizeof(struct wifi_connect_req_params))) {
-    LOG_ERR("WiFi connection request failed");
+    LOG_ERR("WIFI connection request failed");
     return -1;
   }
 
-  if (k_sem_take(&_wifi_connection.wifi.semaphore, K_SECONDS(30)) != 0) {
-    LOG_ERR("WiFi connection timeout");
+  if (!wifi_connected(K_SECONDS(30))) {
+    LOG_ERR("WIFI connection timeout");
     return -1;
   }
 
-  LOG_INF("Successfully connected to WiFi, starting DHCP");
+  LOG_INF("Successfully connected to WIFI, starting DHCP");
   net_dhcpv4_start(_wifi_connection.iface);
   return 0;
 }
 
-static int wait_for_ip() {
-  LOG_INF("Waiting for IP");
-  if (k_sem_take(&_wifi_connection.net.semaphore, K_SECONDS(30)) != 0) {
+bool wifi_connected(k_timeout_t timeout) {
+  LOG_INF("Waiting for WIFI for %lld ms", k_ticks_to_ms_floor64(timeout.ticks));
+  if (k_event_wait(&_wifi_connection.wifi.event, CONNECTED, false, timeout) ==
+      0) {
+    LOG_ERR("Timeout while waiting for WIFI");
+    return false;
+  }
+  LOG_INF("WIFI connected");
+  return true;
+}
+
+bool has_ip(k_timeout_t timeout) {
+  LOG_INF("Waiting for an IP for %lld ms",
+          k_ticks_to_ms_floor64(timeout.ticks));
+  if (k_event_wait(&_wifi_connection.net.event, CONNECTED, false, timeout) ==
+      0) {
     LOG_ERR("DHCP timeout");
-    return -1;
+    return false;
   }
   LOG_INF("Obtained IP");
-  return 0;
+  return true;
 }
 
 static int try_connect_wifi(uint32_t retries) {
@@ -110,7 +127,7 @@ static int try_connect_wifi(uint32_t retries) {
       return 0;
     }
     retries--;
-    LOG_ERR("Failed to connect to WiFi, retrying %d more times", retries);
+    LOG_ERR("Failed to connect to WIFI, retrying %d more times", retries);
     k_sleep(K_SECONDS(5));
   }
   return -ECONNREFUSED;
@@ -118,7 +135,7 @@ static int try_connect_wifi(uint32_t retries) {
 
 static int try_wait_for_ip(uint32_t retries) {
   while (retries) {
-    if (wait_for_ip() == 0) {
+    if (has_ip(K_SECONDS(30))) {
       return 0;
     }
     retries--;
@@ -128,10 +145,10 @@ static int try_wait_for_ip(uint32_t retries) {
 }
 
 int init_wifi(void) {
-  LOG_INF("WiFi initializing");
+  LOG_INF("WIFI initializing");
 
-  k_sem_init(&_wifi_connection.wifi.semaphore, 0, 1);
-  k_sem_init(&_wifi_connection.net.semaphore, 0, 1);
+  k_event_init(&_wifi_connection.wifi.event);
+  k_event_init(&_wifi_connection.net.event);
 
   _wifi_connection.iface = net_if_get_default();
 
@@ -165,7 +182,7 @@ static int cmd_connection_try_wifi(const struct shell *sh, size_t argc,
 
 SHELL_STATIC_SUBCMD_SET_CREATE(my_connection_cmds,
                                SHELL_CMD_ARG(connect, NULL,
-                                             "Try connecting to wifi",
+                                             "Try connecting to WIFI",
                                              cmd_connection_try_wifi, 1, 1),
                                SHELL_SUBCMD_SET_END);
 
